@@ -790,6 +790,29 @@
     padding:0 6px;
     margin-right:2px;
   }
+  .recipe-group-title{
+    font-size:13px;
+    font-weight:700;
+    color:var(--accent-dark);
+    letter-spacing:0.04em;
+    margin:18px 0 10px;
+    padding-bottom:6px;
+    border-bottom:2px solid var(--line);
+  }
+  .recipe-group-title:first-child{ margin-top:4px; }
+  .recipe-card.is-soldout{ opacity:0.7; background:#f7ece8; border-color:#e3c4ba; }
+  .rc-soldout-badge{
+    display:inline-block;
+    font-size:10px; font-weight:700;
+    color:#fff; background:#8a7d68;
+    border-radius:8px; padding:1px 7px;
+    margin-left:6px; vertical-align:middle;
+  }
+  .rc-sold-line{
+    margin-top:6px;
+    font-size:11.5px; font-weight:700;
+    color:var(--accent-dark);
+  }
 </style>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -1570,6 +1593,8 @@ db.collection('settings').doc('sold_out').onSnapshot(snap=>{
   const ids = snap.exists ? (snap.data().ids || []) : [];
   soldOutIngredients = new Set(ids);
   renderStockGrid();
+  // レシピ検索の品切れ表示も更新（関数が定義済みのときだけ）
+  if(typeof renderRecipeResults === 'function') renderRecipeResults();
 });
 
 async function saveSoldOut(){
@@ -1658,24 +1683,90 @@ const ALL_DRINKS = [
   ...COCKTAIL_MENU.map(m=>({...m, type:'cocktail'})),
 ];
 
+// 材料id→名前
+const INGREDIENT_NAME = {};
+INGREDIENTS_MASTER.forEach(ing => { INGREDIENT_NAME[ing.id] = ing.name; });
+
+// カタカナ↔ひらがなを吸収（ひらがな検索でもヒットさせる）
+function normalizeKana(s){
+  return String(s).toLowerCase().replace(/[\u30a1-\u30f6]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
+
+// 1ドリンクのカードDOMを生成
+function buildRecipeCard(d){
+  const recipe = RECIPES[d.name];
+
+  // 品切れ材料の判定
+  const soldIds = getDrinkIngredientIds(d).filter(id => soldOutIngredients.has(id));
+  const isSold = soldIds.length > 0;
+  const soldNames = soldIds.map(id => INGREDIENT_NAME[id]).filter(Boolean);
+
+  let recipeHtml;
+  if(recipe){
+    recipeHtml = `
+      <div class="recipe">
+        <div class="recipe-row"><span class="recipe-key">材料</span><span class="recipe-val">${escapeHtml(recipe.ingredients)}</span></div>
+        <div class="recipe-row"><span class="recipe-key">グラス</span><span class="recipe-val">${escapeHtml(recipe.glass)}　氷:${escapeHtml(recipe.ice)}　シェイク:${escapeHtml(recipe.shake)}</span></div>
+      </div>`;
+  } else {
+    recipeHtml = `<div class="recipe recipe-missing">レシピ未登録</div>`;
+  }
+
+  const soldLine = isSold
+    ? `<div class="rc-sold-line">品切れ: ${escapeHtml(soldNames.join('、'))}</div>`
+    : '';
+
+  const card = document.createElement('div');
+  card.className = 'recipe-card' + (isSold ? ' is-soldout' : '');
+  card.innerHTML = `
+    <div class="rc-head">
+      <span class="rc-name"><span class="rc-type">[${typeLabel[d.type]}]</span>${escapeHtml(d.name)}${isSold ? '<span class="rc-soldout-badge">品切れ</span>' : ''}</span>
+      <span class="rc-cat">${escapeHtml(d.cat)}</span>
+    </div>
+    ${d.desc ? `<div class="rc-desc">${escapeHtml(d.desc)}</div>` : ''}
+    ${recipeHtml}
+    ${soldLine}
+    <div class="rc-actions">
+      <div class="rc-qty">
+        <button class="rc-minus" type="button">−</button>
+        <span class="rc-qtyval">1</span>
+        <button class="rc-plus" type="button">＋</button>
+      </div>
+      <button class="rc-add" type="button">注文に追加</button>
+    </div>
+  `;
+  // 数量ステッパー
+  let qty = 1;
+  const qtyEl = card.querySelector('.rc-qtyval');
+  card.querySelector('.rc-plus').addEventListener('click', ()=>{ qty++; qtyEl.textContent = qty; });
+  card.querySelector('.rc-minus').addEventListener('click', ()=>{ qty = Math.max(1, qty - 1); qtyEl.textContent = qty; });
+  // 注文に追加
+  const addBtn = card.querySelector('.rc-add');
+  addBtn.addEventListener('click', async ()=>{
+    addBtn.disabled = true;
+    await addStaffOrder(d, qty);
+    qty = 1; qtyEl.textContent = qty;
+    addBtn.disabled = false;
+  });
+  return card;
+}
+
 function renderRecipeResults(){
   const raw = document.getElementById('recipeSearchInput').value.trim();
-  const query = raw.toLowerCase();
+  const query = normalizeKana(raw);
   const results = document.getElementById('recipeResults');
   const countEl = document.getElementById('recipeCount');
 
-  // 未入力時はヒントを表示
-  if(query === ''){
-    countEl.textContent = '';
-    results.innerHTML = '<div class="recipe-empty-hint">メニュー名を入力すると、レシピが表示されます。<br>モクテル・カクテル両方が対象です。</div>';
-    return;
-  }
-
-  const matches = ALL_DRINKS.filter(d=>{
-    const name = (d.name || '').toLowerCase();
-    const desc = (d.desc || '').toLowerCase();
-    return name.includes(query) || desc.includes(query);
-  });
+  // 未入力なら全件、入力ありなら絞り込み
+  const matches = query === ''
+    ? ALL_DRINKS.slice()
+    : ALL_DRINKS.filter(d=>{
+        const name = normalizeKana(d.name || '');
+        const desc = normalizeKana(d.desc || '');
+        return name.includes(query) || desc.includes(query);
+      });
 
   if(matches.length === 0){
     countEl.textContent = '';
@@ -1683,66 +1774,30 @@ function renderRecipeResults(){
     return;
   }
 
-  countEl.textContent = `${matches.length}件見つかりました`;
-  const grid = document.createElement('div');
-  grid.className = 'recipe-results-grid';
+  countEl.textContent = query === ''
+    ? `全 ${matches.length} 品`
+    : `${matches.length}件見つかりました`;
 
-  matches.forEach(d=>{
-    const recipe = RECIPES[d.name];
-    let recipeHtml;
-    if(recipe){
-      recipeHtml = `
-        <div class="recipe">
-          <div class="recipe-row"><span class="recipe-key">材料</span><span class="recipe-val">${escapeHtml(recipe.ingredients)}</span></div>
-          <div class="recipe-row"><span class="recipe-key">グラス</span><span class="recipe-val">${escapeHtml(recipe.glass)}　氷:${escapeHtml(recipe.ice)}　シェイク:${escapeHtml(recipe.shake)}</span></div>
-        </div>`;
-    } else {
-      recipeHtml = `<div class="recipe recipe-missing">レシピ未登録</div>`;
-    }
-    const card = document.createElement('div');
-    card.className = 'recipe-card';
-    card.innerHTML = `
-      <div class="rc-head">
-        <span class="rc-name"><span class="rc-type">[${typeLabel[d.type]}]</span>${escapeHtml(d.name)}</span>
-        <span class="rc-cat">${escapeHtml(d.cat)}</span>
-      </div>
-      ${d.desc ? `<div class="rc-desc">${escapeHtml(d.desc)}</div>` : ''}
-      ${recipeHtml}
-      <div class="rc-actions">
-        <div class="rc-qty">
-          <button class="rc-minus" type="button">−</button>
-          <span class="rc-qtyval">1</span>
-          <button class="rc-plus" type="button">＋</button>
-        </div>
-        <button class="rc-add" type="button">注文に追加</button>
-      </div>
-    `;
-    // 数量ステッパー
-    let qty = 1;
-    const qtyEl = card.querySelector('.rc-qtyval');
-    card.querySelector('.rc-plus').addEventListener('click', ()=>{
-      qty++; qtyEl.textContent = qty;
-    });
-    card.querySelector('.rc-minus').addEventListener('click', ()=>{
-      qty = Math.max(1, qty - 1); qtyEl.textContent = qty;
-    });
-    // 注文に追加
-    const addBtn = card.querySelector('.rc-add');
-    addBtn.addEventListener('click', async ()=>{
-      addBtn.disabled = true;
-      await addStaffOrder(d, qty);
-      qty = 1; qtyEl.textContent = qty;
-      addBtn.disabled = false;
-    });
-    grid.appendChild(card);
-  });
+  // 系統（cat）ごとにグループ表示
+  const cats = [];
+  matches.forEach(d=>{ if(!cats.includes(d.cat)) cats.push(d.cat); });
 
   results.innerHTML = '';
-  results.appendChild(grid);
+  cats.forEach(cat=>{
+    const heading = document.createElement('div');
+    heading.className = 'recipe-group-title';
+    heading.textContent = cat;
+    results.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'recipe-results-grid';
+    matches.filter(d=>d.cat===cat).forEach(d=> grid.appendChild(buildRecipeCard(d)));
+    results.appendChild(grid);
+  });
 }
 
 document.getElementById('recipeSearchInput').addEventListener('input', renderRecipeResults);
-// 初期表示（ヒント）
+// 初期表示（全件）
 renderRecipeResults();
 
 /* ---------- 店員が注文状況に追加 ---------- */
