@@ -1483,9 +1483,16 @@ function renderAllPanels(){
 }
 
 /* ---------- Search ---------- */
+// カタカナ↔ひらがなを吸収（ひらがな検索でもヒットさせる）
+function normalizeKana(s){
+  return String(s).toLowerCase().replace(/[\u30a1-\u30f6]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+}
+
 function applySearch(){
   const raw = document.getElementById('searchInput').value.trim();
-  const query = raw.toLowerCase();
+  const query = normalizeKana(raw);
 
   Object.keys(DRINK_CONFIG).forEach(drinkKey=>{
     const area = document.getElementById('menuArea-' + drinkKey);
@@ -1495,8 +1502,8 @@ function applySearch(){
     let totalVisible = 0;
 
     cards.forEach(card=>{
-      const name = card.dataset.name || '';
-      const desc = card.dataset.desc || '';
+      const name = normalizeKana(card.dataset.name || '');
+      const desc = normalizeKana(card.dataset.desc || '');
       const match = query === '' || name.includes(query) || desc.includes(query);
       card.style.display = match ? '' : 'none';
       if(match) totalVisible++;
