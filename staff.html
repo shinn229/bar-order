@@ -505,6 +505,11 @@
     margin-bottom:6px;
   }
   .order-card .order-label{font-weight:700; color:var(--ink); font-size:14px;}
+  .order-card .order-nick{
+    margin:2px 0 4px;
+    font-size:13px; font-weight:700;
+    color:var(--accent-dark);
+  }
   .order-card ul.order-items{margin:6px 0; padding-left:0; list-style:none; font-size:13px;}
   .order-card li.order-item{
     display:block;
@@ -1542,6 +1547,7 @@ function renderOrderCard(order){
       <span class="order-label">${formatTime(order.createdAt)}</span>
       <span>${order.source === 'staff' ? '<span class="src-staff">店員追加</span> ' : ''}${timeAgo(order.createdAt)}</span>
     </div>
+    ${(order.nickname && order.nickname.trim() !== '') ? `<div class="order-nick">👤 ${escapeHtml(order.nickname)} 様</div>` : ''}
     <ul class="order-items">${itemsHtml}</ul>
     <div class="actions">${actionsHtml}</div>
   `;
