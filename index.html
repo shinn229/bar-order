@@ -433,6 +433,42 @@
     cursor:pointer;
     color:var(--ink);
   }
+  /* ニックネーム */
+  .nick-btn{
+    display:flex; align-items:center; gap:4px;
+    max-width:120px;
+  }
+  .nick-btn #nickLabel{
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:80px;
+  }
+  .nickname-box{ text-align:center; }
+  .nickname-box h3{ text-align:center; font-size:18px; margin-bottom:8px; }
+  .nickname-desc{ font-size:13px; color:#8a7d68; margin:0 0 16px; line-height:1.6; }
+  .nickname-box input{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    font-size:16px;
+    text-align:center;
+    background:var(--paper-card);
+    color:var(--ink);
+    font-family:inherit;
+    box-sizing:border-box;
+    margin-bottom:14px;
+  }
+  .nickname-box input:focus{ outline:none; border-color:var(--accent); }
+  #saveNickname{
+    width:100%;
+    background:var(--accent); color:#fff; border:none;
+    padding:13px; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer;
+  }
+  #saveNickname:disabled{ background:#d9cdba; cursor:not-allowed; }
+  .nickname-skip{
+    display:block; margin:12px auto 0;
+    background:transparent; border:none;
+    color:#a99c87; font-size:12px; cursor:pointer; text-decoration:underline;
+  }
   .history-entry{border-bottom:1px solid var(--line); padding:12px 0;}
   .history-entry:last-child{border-bottom:none;}
   .history-entry .h-meta{
@@ -728,6 +764,7 @@
 <div class="topbar">
   <div class="brand">ドリンク注文</div>
   <div class="right-actions">
+    <button class="nick-btn" id="btn-nickname">👤 <span id="nickLabel">ゲスト</span></button>
     <button class="history-btn" id="btn-history">履歴</button>
   </div>
 </div>
@@ -766,6 +803,16 @@
     <div class="oc-check">✓</div>
     <div class="oc-title">注文完了</div>
     <div class="oc-sub">ご注文ありがとうございます</div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="nicknameModal">
+  <div class="modal-box nickname-box">
+    <h3 id="nicknameTitle">ようこそ！</h3>
+    <p class="nickname-desc">ニックネームを登録しておくと、ご注文がスムーズになります。<br>あとから変更もできます。</p>
+    <input type="text" id="nicknameInput" maxlength="20" placeholder="例：たなか" autocomplete="off">
+    <button id="saveNickname" disabled>登録する</button>
+    <button class="nickname-skip" id="skipNickname">スキップする</button>
   </div>
 </div>
 
@@ -1597,7 +1644,8 @@ async function sendOrder(){
     items,
     status: 'new',
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    createdAtMs: Date.now()
+    createdAtMs: Date.now(),
+    nickname: (myNickname || '').trim()
   };
 
   try{
@@ -1700,10 +1748,69 @@ function reattachNavObservers(){
   Object.keys(DRINK_CONFIG).forEach(setupNavObserver);
 }
 
+/* ---------- ニックネーム（端末ごとに登録・保存） ---------- */
+// null = この端末で未登録（初回アクセス）
+let myNickname = localStorage.getItem('nickname');
+
+const nicknameModal = document.getElementById('nicknameModal');
+const nicknameInput = document.getElementById('nicknameInput');
+const saveNicknameBtn = document.getElementById('saveNickname');
+
+function reflectNickname(){
+  const label = document.getElementById('nickLabel');
+  const name = (myNickname || '').trim();
+  label.textContent = name !== '' ? name : 'ゲスト';
+}
+
+// 初回のみポップアップ表示。2回目以降（リロード含む）は保存済みなので出さない
+function openNicknameModal(isFirst){
+  document.getElementById('nicknameTitle').textContent = isFirst ? 'ようこそ！' : 'ニックネームの変更';
+  nicknameInput.value = (myNickname || '');
+  saveNicknameBtn.disabled = nicknameInput.value.trim() === '';
+  nicknameModal.classList.add('show');
+  setTimeout(()=>nicknameInput.focus(), 100);
+}
+
+function saveNickname(name){
+  myNickname = name;                              // '' でも「登録済み」として扱う
+  localStorage.setItem('nickname', name);         // 同一端末はリロードしても保持
+  reflectNickname();
+  nicknameModal.classList.remove('show');
+}
+
+nicknameInput.addEventListener('input', ()=>{
+  saveNicknameBtn.disabled = nicknameInput.value.trim() === '';
+});
+nicknameInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && nicknameInput.value.trim() !== '') saveNickname(nicknameInput.value.trim());
+});
+saveNicknameBtn.addEventListener('click', ()=>{
+  const name = nicknameInput.value.trim();
+  if(name !== '') saveNickname(name);
+});
+document.getElementById('skipNickname').addEventListener('click', ()=>{
+  // スキップしても「登録済み」にして次回から出さない（空 = ゲスト）
+  saveNickname('');
+});
+// トップバーのボタンからいつでも変更できる
+document.getElementById('btn-nickname').addEventListener('click', ()=> openNicknameModal(false));
+// 登録済みのときだけ、モーダル外クリックで閉じられる（初回は閉じさせない）
+nicknameModal.addEventListener('click', (e)=>{
+  if(e.target === nicknameModal && myNickname !== null) nicknameModal.classList.remove('show');
+});
+
+function initNickname(){
+  reflectNickname();
+  if(myNickname === null){        // getItem が null = この端末で一度も登録していない
+    openNicknameModal(true);
+  }
+}
+
 /* ---------- Init ---------- */
 renderAllPanels();
 updateCart();
 reattachNavObservers();
+initNickname();
 </script>
 </body>
 </html>
