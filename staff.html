@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>ドリンク注文（店員用）</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cg%20fill%3D%22%23F48FB1%22%3E%3Cellipse%20cx%3D%2232%22%20cy%3D%2240%22%20rx%3D%2215%22%20ry%3D%2213%22/%3E%3Cellipse%20cx%3D%2215%22%20cy%3D%2227%22%20rx%3D%226.5%22%20ry%3D%228%22/%3E%3Cellipse%20cx%3D%2226%22%20cy%3D%2217%22%20rx%3D%226%22%20ry%3D%228%22/%3E%3Cellipse%20cx%3D%2238%22%20cy%3D%2217%22%20rx%3D%226%22%20ry%3D%228%22/%3E%3Cellipse%20cx%3D%2249%22%20cy%3D%2227%22%20rx%3D%226.5%22%20ry%3D%228%22/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
 <style>
   :root{
     --ink:#2b2420;
@@ -562,6 +562,38 @@
     padding:24px 0; border:1px dashed var(--line); border-radius:10px;
   }
   .refresh-note{font-size:11px; color:#a99c87; margin-top:18px; text-align:center;}
+  .orders-reset-wrap{ text-align:center; margin-top:10px; }
+  .orders-reset{
+    background:transparent;
+    border:1px solid var(--line);
+    color:#8a7d68;
+    padding:9px 18px;
+    border-radius:8px;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .orders-reset:hover{ background:var(--paper-dim); border-color:var(--accent); color:var(--accent-dark); }
+  .orders-reset:disabled{ opacity:0.5; cursor:not-allowed; }
+  .stock-item-clickable{ cursor:pointer; }
+  .stock-item-clickable:hover{ border-color:var(--accent); background:var(--paper-dim); }
+  .ing-modal-count{
+    font-size:12px; font-weight:400; color:#fff; background:var(--accent);
+    border-radius:10px; padding:1px 9px; margin-left:8px; vertical-align:middle;
+  }
+  .ing-modal-sold{
+    font-size:11px; font-weight:700; color:#fff; background:#8a7d68;
+    border-radius:10px; padding:1px 8px; margin-left:6px; vertical-align:middle;
+  }
+  .ing-modal-empty{ color:#a99c87; font-size:13px; padding:12px 0; }
+  #ingModalList{ max-height:60vh; overflow-y:auto; margin-top:6px; }
+  .ing-cat-group{ margin-bottom:14px; }
+  .ing-cat-name{
+    font-size:12px; font-weight:700; color:var(--accent-dark);
+    border-bottom:1px solid var(--line); padding-bottom:4px; margin-bottom:6px;
+  }
+  #ingModalList ul{ margin:0; padding-left:0; list-style:none; }
+  #ingModalList li{ padding:5px 2px; font-size:13.5px; border-bottom:1px dotted var(--line); }
+  .ing-d-type{ font-size:10px; color:#a99c87; margin-right:5px; }
 
   /* ---------- Staff sub-tabs & stock management ---------- */
   .staff-subtabs{
@@ -712,6 +744,8 @@
     }
     .side-nav button.active{border-left-color:transparent; border-bottom-color:var(--accent);}
     .menu-main{padding:12px 10px 100px;}
+    .recipe-layout{flex-direction:column;}
+    .recipe-main{padding:12px 0 60px;}
     .menu-grid{gap:8px;}
     .menu-card{padding:9px; gap:5px;}
     .menu-card .name{font-size:13px;}
@@ -805,6 +839,9 @@
     border-bottom:2px solid var(--line);
   }
   .recipe-group-title:first-child{ margin-top:4px; }
+  .recipe-layout{ display:flex; align-items:flex-start; margin-top:6px; }
+  .recipe-main{ padding:0 0 40px 4px; }
+  .recipe-layout .side-nav{ top:8px; padding-top:8px; }
   .recipe-card.is-soldout{ opacity:0.7; background:#f7ece8; border-color:#e3c4ba; }
   .rc-soldout-badge{
     display:inline-block;
@@ -854,6 +891,9 @@
       </div>
     </div>
     <div class="refresh-note">リアルタイムで自動更新されます</div>
+    <div class="orders-reset-wrap">
+      <button id="resetDone" class="orders-reset">完了した注文をリセット（表示から消す）</button>
+    </div>
   </div>
 
   <div class="staff-section" id="staff-stock">
@@ -884,11 +924,22 @@
       </div>
     </div>
     <div class="recipe-count sub" id="recipeCount"></div>
-    <div id="recipeResults"></div>
+    <div class="recipe-layout">
+      <div class="side-nav" id="recipeNav"><div class="nav-label">系統からジャンプ</div></div>
+      <div class="menu-main recipe-main"><div id="recipeResults"></div></div>
+    </div>
   </div>
 </div>
 
 <div class="toast" id="staffToast"></div>
+
+<div class="modal-overlay" id="ingredientModal">
+  <div class="modal-box">
+    <button class="modal-close" id="closeIngModal">×</button>
+    <h3 id="ingModalTitle"></h3>
+    <div id="ingModalList"></div>
+  </div>
+</div>
 
 <script>
   const firebaseConfig = {
@@ -1560,13 +1611,14 @@ function renderOrderCard(order){
 // Firestoreのordersコレクションをリアルタイム監視
 db.collection('orders')
   .orderBy('createdAtMs', 'desc')
-  .limit(50)
+  .limit(200)
   .onSnapshot(snapshot=>{
     const orders = snapshot.docs.map(doc=>{return {id:doc.id, ...doc.data()}});
     const grouped = {new:[], done:[]};
     orders.forEach(o=>{
       if(o.status === 'done') grouped.done.push(o);
-      else grouped.new.push(o);
+      else if(o.status === 'new') grouped.new.push(o);
+      // それ以外（archived 等）は表示しない
     });
 
     const cols = {
@@ -1592,6 +1644,45 @@ db.collection('orders')
     document.getElementById('orderCount').textContent =
       `未対応 ${grouped.new.length}件 / 完了 ${grouped.done.length}件`;
   });
+
+/* ---------- 完了注文のリセット（恒久：archive化。データは残す） ---------- */
+async function resetDoneOrders(){
+  const btn = document.getElementById('resetDone');
+  btn.disabled = true;
+  try{
+    const snap = await db.collection('orders').where('status','==','done').get();
+    if(snap.empty){
+      showStaffToast('完了した注文はありません');
+      btn.disabled = false;
+      return;
+    }
+    if(!confirm(`完了した注文 ${snap.size}件を表示から消します。よろしいですか？\n（記録自体は残ります／元に戻せません）`)){
+      btn.disabled = false;
+      return;
+    }
+    // 500件ずつバッチ更新
+    const docs = snap.docs;
+    for(let i=0; i<docs.length; i+=450){
+      const batch = db.batch();
+      docs.slice(i, i+450).forEach(d=> batch.update(d.ref, {status:'archived'}));
+      await batch.commit();
+    }
+    showStaffToast(`完了した注文 ${snap.size}件をリセットしました`);
+  }catch(e){
+    console.error('reset done failed', e);
+    showStaffToast('リセットに失敗しました');
+  }
+  btn.disabled = false;
+}
+document.getElementById('resetDone').addEventListener('click', resetDoneOrders);
+
+/* ---------- 材料→使用ドリンク モーダルの開閉 ---------- */
+document.getElementById('closeIngModal').addEventListener('click', ()=>{
+  document.getElementById('ingredientModal').classList.remove('show');
+});
+document.getElementById('ingredientModal').addEventListener('click', (e)=>{
+  if(e.target.id === 'ingredientModal') e.target.classList.remove('show');
+});
 
 /* ---------- 材料管理（Firestore） ---------- */
 // 品切れ状態の読み込み（リアルタイム）
@@ -1629,21 +1720,65 @@ function makeStockItem(ing){
   const usedCount = countDrinksUsingIngredient(ing.id);
   const isSoldOut = soldOutIngredients.has(ing.id);
   const row = document.createElement('div');
-  row.className = 'stock-item' + (isSoldOut ? ' is-soldout' : '');
+  row.className = 'stock-item stock-item-clickable' + (isSoldOut ? ' is-soldout' : '');
   row.innerHTML = `
-    <div class="stock-name">${ing.name}<span class="count">使用ドリンク ${usedCount}種</span></div>
+    <div class="stock-name">${ing.name}<span class="count">使用ドリンク ${usedCount}種 ・ タップで一覧</span></div>
     <label class="switch-toggle">
       <input type="checkbox" ${isSoldOut ? 'checked' : ''}>
       <span class="switch-track"></span>
     </label>
   `;
   const checkbox = row.querySelector('input');
+  const toggleLabel = row.querySelector('.switch-toggle');
   checkbox.addEventListener('change', async ()=>{
     if(checkbox.checked) soldOutIngredients.add(ing.id);
     else soldOutIngredients.delete(ing.id);
     await saveSoldOut();
   });
+  // トグル部分のクリックは一覧モーダルを開かない
+  toggleLabel.addEventListener('click', (e)=> e.stopPropagation());
+  // カード本体タップ → この材料を使うドリンク一覧を表示
+  row.addEventListener('click', ()=> showIngredientDrinks(ing));
   return row;
+}
+
+// 指定材料を使うドリンクを取得
+function getDrinksUsingIngredient(ingId){
+  const out = [];
+  Object.keys(DRINK_CONFIG).forEach(dk=>{
+    DRINK_CONFIG[dk].menu.forEach(item=>{
+      if(getDrinkIngredientIds(item).includes(ingId)) out.push({...item, type:dk});
+    });
+  });
+  return out;
+}
+
+// 材料を使うドリンク一覧をモーダル表示
+function showIngredientDrinks(ing){
+  const drinks = getDrinksUsingIngredient(ing.id);
+  const modal = document.getElementById('ingredientModal');
+  const titleEl = document.getElementById('ingModalTitle');
+  const listEl = document.getElementById('ingModalList');
+  const soldOut = soldOutIngredients.has(ing.id);
+
+  titleEl.innerHTML = `${ing.name} を使うドリンク`
+    + `<span class="ing-modal-count">${drinks.length}種</span>`
+    + (soldOut ? '<span class="ing-modal-sold">品切れ中</span>' : '');
+
+  if(drinks.length === 0){
+    listEl.innerHTML = '<div class="ing-modal-empty">この材料を使うドリンクはありません。</div>';
+  } else {
+    // 系統ごとにまとめる
+    const cats = [];
+    drinks.forEach(d=>{ if(!cats.includes(d.cat)) cats.push(d.cat); });
+    listEl.innerHTML = cats.map(cat=>{
+      const items = drinks.filter(d=>d.cat===cat).map(d=>
+        `<li><span class="ing-d-type">[${typeLabel[d.type]}]</span>${escapeHtml(d.name)}</li>`
+      ).join('');
+      return `<div class="ing-cat-group"><div class="ing-cat-name">${escapeHtml(cat)}</div><ul>${items}</ul></div>`;
+    }).join('');
+  }
+  modal.classList.add('show');
 }
 
 function renderStockGrid(){
@@ -1777,6 +1912,8 @@ function renderRecipeResults(){
   if(matches.length === 0){
     countEl.textContent = '';
     results.innerHTML = `<div class="recipe-empty-hint">「${escapeHtml(raw)}」に一致するメニューが見つかりませんでした。</div>`;
+    const navEmpty = document.getElementById('recipeNav');
+    navEmpty.querySelectorAll('button').forEach(b=>b.remove());
     return;
   }
 
@@ -1788,10 +1925,28 @@ function renderRecipeResults(){
   const cats = [];
   matches.forEach(d=>{ if(!cats.includes(d.cat)) cats.push(d.cat); });
 
+  // 左サイドバー（系統ジャンプ）を再構築
+  const nav = document.getElementById('recipeNav');
+  nav.querySelectorAll('button').forEach(b=>b.remove());
+
   results.innerHTML = '';
   cats.forEach(cat=>{
+    const sectionId = 'rgroup-' + cat.replace(/[^\w一-龯ぁ-んァ-ン]/g, '');
+
+    // ナビボタン
+    const navBtn = document.createElement('button');
+    navBtn.textContent = cat;
+    navBtn.dataset.target = sectionId;
+    navBtn.addEventListener('click', ()=>{
+      const el = document.getElementById(sectionId);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+    nav.appendChild(navBtn);
+
+    // 見出し（スクロール先）
     const heading = document.createElement('div');
     heading.className = 'recipe-group-title';
+    heading.id = sectionId;
     heading.textContent = cat;
     results.appendChild(heading);
 
@@ -1800,6 +1955,28 @@ function renderRecipeResults(){
     matches.filter(d=>d.cat===cat).forEach(d=> grid.appendChild(buildRecipeCard(d)));
     results.appendChild(grid);
   });
+
+  attachRecipeNavObserver();
+}
+
+// レシピ検索のスクロール位置に応じて系統ナビをハイライト
+let recipeNavObserver = null;
+function attachRecipeNavObserver(){
+  const nav = document.getElementById('recipeNav');
+  const titles = document.querySelectorAll('#recipeResults .recipe-group-title');
+  if(recipeNavObserver) recipeNavObserver.disconnect();
+  if(titles.length === 0) return;
+  recipeNavObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const id = entry.target.id;
+        nav.querySelectorAll('button').forEach(b=>{
+          b.classList.toggle('active', b.dataset.target === id);
+        });
+      }
+    });
+  }, {rootMargin: '-8% 0px -75% 0px'});
+  titles.forEach(el=> recipeNavObserver.observe(el));
 }
 
 document.getElementById('recipeSearchInput').addEventListener('input', renderRecipeResults);
